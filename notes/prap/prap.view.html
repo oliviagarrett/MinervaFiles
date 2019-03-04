@@ -1,0 +1,230 @@
+<!--FIle:prap.view.html
+Usesutility/attachments/attachments.view.html
+Usesprap.controller.js
+-->
+
+<head>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="container" id="prapContainer" ng-app="myApp" ng-controller="prapController"
+	 xmlns="http://www.w3.org/1999/html">
+<form>
+	<div class="row justify-content-center">
+	<div class="col-xs-12">
+	<h1>PRAP</h1>
+	</div>
+	</div>
+	<div>
+		<button class= "minervaButton" ng-click="editSection()"><i class="material-icons" style="font-size:17px;">edit</i> Edit</button>
+	</div>
+	<!--GPREPEAT for all of the notes
+    To filter date Look at https://www.w3schools.com/angular/ng_filter_date.asp-->
+   <!-- <p>Date={{today|date:"dd.MM.y"}}</p>
+
+    <div ng-repeat="noteinallNotestrackby$index">
+    	{{note.GenNoteTopic}}-by{{note.NoteCreatorID}}-Createdon:{{parseDate(note.NoteCreatedDate)|date:"MM-dd-y"}}<br>
+    	Note:--{{note.GenNote}}
+    	<hr>
+	</div>-->
+
+	<label for="noteTable">Notes</label>
+	<table class="table table-striped" ng-repeat="note in prapNotes track by $index" id="noteTable">
+		<div>
+			<button class="minervaButton" ng-click="note.NoteCreatedByName=null; note.NoteCreatedDate=null; notes.NoteEditorID=null;
+      				note.NoteEditedDate=null"><i class="material-icons" style="font-size:17px;">close</i> Cancel</button>
+			<button class="minervaButton btn-success" ng-click="saveNotes()"><i class="material-icons" style="font-size:17px;">check</i> Save</button>
+		</div>
+		<thead>
+			<tr>
+				<th scope="col">Created By</th>
+				<th scope="col">Created Date</th>
+				<th scope="col">Edited By</th>
+				<th scope="col">Edited Date</th>
+				<th scope="col">Notes</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="note in prapNotes track by $index">
+				<!-- Input boxes are only editable after edit button has been clicked -->
+				<td> <input type="text" ng-disabled="NotEditable" class="form-control" ng-model= "note.NoteCreatedByName"></td>
+				<td><input type="text" ng-disabled="NotEditable" class="form-control" ng-model="note.NoteCreatedDate"></td>
+				<td><input type="text" ng-disabled="NotEditable" class="form-control" ng-model="notes.NoteEditorID"></td>
+				<td><input type="text" ng-disabled="NotEditable" class="form-control" ng-model="note.NoteEditedDate"></td>
+				<td><input type="text" ng-disabled="NotEditable" class="form-control" ng-model="note.NoteEditedDate"></td>
+				<td><textarea  ng-disabled="NotEditable" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- the attachments section is not visible until edit is clicked on -->
+	<div ng-if="!NotEditable">
+		<fieldset class="form-group">
+		<div class="row">
+			<legend class="col-form-labelcol-xs-12">Attachments</legend>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<ng-include src="'./utility/attachments/attachments.view.html'"></ng-include>
+			</div>
+		</div>
+		</fieldset>
+	</div>
+
+	<fieldset class="form-group">
+		<div class="row">
+			<legend class="col-form-labelcol-xs-12">MentorContacts</legend>
+		</div>
+		<!-- this div is only viewable after the user clicks on edit -->
+		<div ng-if="!NotEditable">
+			<!-- the cancel button calls the cancelUpdate function to cancel the current input -->
+			<button class="minervaButton" ng-click="cancelUpdate()"><i class="material-icons" style="font-size:17px;">close</i> Cancel</button>
+			<!-- the save button calls the saveContacts function when clicked to save the current
+			input to the database -->
+			<button class="minervaButton" ng-click="saveContacts()"><i class="material-icons" style="font-size:17px;">check</i> Save</button>
+		</div>
+		<div ng-repeat="contactinmentorContactstrackby$index">
+			<div class="form-row">
+				<div class="col-md-1d-noned-md-block"></div>
+				<div class="form-groupcol-md-2">
+					<label>Date</label>
+					<!-- this input is not editable until the user clicks edit -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="contact.ContactDate">
+				</div>
+				<div class="form-groupcol-md-2">
+					<label>Type</label>
+					<!-- this input is disabled until the user clicks edit -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="contact.MentorContactType">
+				</div>
+				<div class="form-groupcol-md-2">
+					<label>Mentor</label>
+					<!-- this input is disabled until the user clicks edit -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="contact.MentorName">
+				</div>
+				<div class="form-groupcol-md-2">
+    				<label class="">DocumentAttached</label>
+    				<input type="file" class="form-control-file" id="mentorContactDocumentAttachedInput">
+    			</div>
+
+
+
+				<div class="col-md-1d-noned-md-block"></div>
+			</div>
+			<div class="form-row">
+				<div class="col-md-1d-noned-md-block"></div>
+				<div class="form-groupcol-md-10">
+					<label class="">Note</label>
+					<input rows="2" class="form-control" ng-model="contact.MentorContactNote">
+				</div>
+				<div class="col-md-1d-noned-md-block"></div>
+			</div>
+			<hr>
+		</div>
+		<div class="form-row">
+				<div class="col-md-5d-noned-md-block"></div>
+			<div class="form-rowjustify-content-centercol-md-2">
+				<!-- the AddNote button is not visible until the user clicks the edit button -->
+				<div ng-if="!NotEditable">
+					<button class="minervaButton col-xs-12btn-danger"><i class="material-icons" style="font-size:17px;">add</i> Add Note</button>
+				</div>
+				<div class="col-md-5d-noned-md-block"></div>
+			</div>
+		</div>
+	</fieldset>
+
+
+	<fieldset class="form-group">
+		<div class="row">
+			<legend class="col-form-labelcol-xs-12">ActionPlan</legend>
+		</div>
+		<!-- the save and cancel buttons are not visible until the user clicks edit -->
+		<div ng-if="!NotEditable">
+			<button class="minervaButton" ng-click="cancelUpdate()"><i class="material-icons" style="font-size:17px;">close</i> Cancel</button>
+			<button class="minervaButton" ng-click="savePlan()"><i class="material-icons" style="font-size:17px;">check</i> Save</button>
+		</div>
+
+		<div class="form-row">
+			<div class="col-md-1d-noned-md-block"></div>
+			<div class="form-groupcol-md-2">
+				<label class="">Category</label>
+				<!-- the input box is disabled until the user clicks the edit button -->
+				<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.PRAPCategory"></div>
+				<div class="form-groupcol-md-2">
+					<label>Sponsor</label>
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.PRAPSponsorID">
+				</div>
+				<div class="form-groupcol-md-2">
+					<label>InitiatedDate</label>
+					<!-- the input box is disabled until the user clicks the edit button -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.PRAPInitDate">
+				</div>
+				<div class="form-groupcol-md-2">
+					<label>CompletedDate</label>
+					<!-- the input box is disabled until the user clicks the edit button -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.PRAPCompleteDate">
+				</div>
+				<div class="form-groupcol-md-2">
+					<label class="">MenteeTrainingDate</label>
+					<!-- the input box is disabled until the user clicks the edit button -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.MenteeTrainingDate">
+				</div>
+				<div class="col-md-1d-noned-md-block"></div>
+		</div>
+	</fieldset>
+
+
+	<fieldset class="form-group">
+		<div class="row">
+			<legend class="col-form-labelcol-xs-12">Goals</legend>
+		</div>
+		<!-- the cancel and save buttons are only visible after the user clicks the edit button-->
+		<div ng-if="!NotEditable">
+			<button class="minervaButton" ng-click="cancelUpdate()"><i class="material-icons" style="font-size:17px;">close</i> Cancel</button>
+			<button class="minervaButton" ng-click="saveGoals()"><i class="material-icons" style="font-size:17px;">check</i> Save</button>
+		</div>
+		<div class="form-row">
+			<div class="col-md-1d-noned-md-block"></div>
+			<div class="form-groupcol-md-2">
+				<label>ShortTermDate</label>
+				<!-- the input box is disabled until the user clicks the edit button -->
+				<input type="text"ng-disabled="NotEditable"class="form-control"ng-model="cadetClass.ShortTermGoalDate">
+			</div>
+			<div class="form-groupcol-md-8">
+				<label>ShortTermDetails</label>
+				<!-- the input box is disabled until the user clicks the edit button -->
+				<input type="text"ng-disabled="NotEditable"class="form-control"ng-model="cadetClass.ShortTermGoal">
+			</div>
+			<div class="col-md-1d-noned-md-block"></div>
+		</div>
+			<div class="form-row">
+				<div class="col-md-1d-noned-md-block"></div>
+				<div class="form-groupcol-md-2">
+					<label>IntermediateTermDate</label>
+					<!-- the input box is disabled until the user clicks the edit button -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.IntermediateGoalDate">
+				</div>
+				<div class="form-groupcol-md-8">
+					<label>IntermediateTermDetails</label>
+					<!-- the input box is disabled until the user clicks the edit button -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.IntermediateGoal">
+				</div>
+				<div class="col-md-1d-noned-md-block"></div>
+			</div>
+			<div class="form-row">
+				<div class="col-md-1d-noned-md-block"></div>
+				<div class="form-groupcol-md-2">
+					<label>LongTermDate</label>
+					<!-- the input box is disabled until the user clicks the edit button -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.LongTermGoalDate">
+				</div>
+				<div class="form-groupcol-md-8">
+					<label>LongTermDetails</label>
+					<!-- the input box is disabled until the user clicks the edit button -->
+					<input type="text" ng-disabled="NotEditable" class="form-control" ng-model="cadetClass.LongTermGoal">
+				</div>
+				<div class="col-md-1d-noned-md-block"></div>
+			</div>
+	</fieldset>
+
+</form>
+</div>
